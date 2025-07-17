@@ -1,6 +1,6 @@
 module github.com/Atomzwieback/obsidian-search-mcp
 
-go 1.24.4
+go 1.21
 
 require (
 	github.com/anyproto/tantivy-go v1.0.4 // indirect

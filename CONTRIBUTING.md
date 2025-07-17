@@ -88,6 +88,6 @@ Fixes #123
 
 ## Questions?
 
-Feel free to contact the maintainer at contact at atomzwieback.dev
+Feel free to contact the maintainer at contact@atomzwieback.dev
 
 Thank you for contributing! 🚀

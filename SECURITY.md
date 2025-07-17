@@ -13,7 +13,7 @@ Currently supported versions for security updates:
 We take security vulnerabilities seriously. If you discover a security vulnerability within Obsidian Search MCP, please follow these steps:
 
 1. **DO NOT** open a public issue
-2. Email details to: contact at atomzwieback.dev
+2. Email details to: contact@atomzwieback.dev
 3. Include the following information:
    - Type of vulnerability
    - Steps to reproduce
@@ -53,4 +53,4 @@ We regularly update dependencies to patch known vulnerabilities:
 
 Thank you for helping us improve the security of Obsidian Search MCP. Your contributions are greatly appreciated.
 
-For questions about security, contact: contact at atomzwieback.dev
+For questions about security, contact: contact@atomzwieback.dev

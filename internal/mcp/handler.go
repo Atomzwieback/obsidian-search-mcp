@@ -6,7 +6,7 @@ import (
     
     "github.com/mark3labs/mcp-go"
     "github.com/mark3labs/mcp-go/server"
-    "github.com/Atomzwieback/obsidian-mcp-search/internal/index"
+    "github.com/Atomzwieback/obsidian-search-mcp/internal/index"
 )
 
 type SearchHandler struct {

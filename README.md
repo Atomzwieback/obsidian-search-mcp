@@ -1,4 +1,4 @@
-# obsidian-mcp-search
+# obsidian-search-mcp
 
 A Model Context Protocol (MCP) server that provides fast full-text search capabilities for Obsidian vaults using Tantivy-Go.
 
@@ -24,8 +24,8 @@ The easiest way to run the server is using Docker, which handles all CGO depende
 
 ```bash
 # Clone the repository
-git clone https://github.com/Atomzwieback/obsidian-mcp-search.git
-cd obsidian-mcp-search
+git clone https://github.com/Atomzwieback/obsidian-search-mcp.git
+cd obsidian-search-mcp
 
 # Build the Docker image
 ./scripts/docker-build.sh
@@ -39,9 +39,9 @@ docker-compose build
 ⚠️ **Note**: This requires CGO and Tantivy C libraries to be available.
 
 ```bash
-git clone https://github.com/Atomzwieback/obsidian-mcp-search.git
-cd obsidian-mcp-search
-CGO_ENABLED=1 go build -o obsidian-mcp-search cmd/server/main.go
+git clone https://github.com/Atomzwieback/obsidian-search-mcp.git
+cd obsidian-search-mcp
+CGO_ENABLED=1 go build -o obsidian-search-mcp cmd/server/main.go
 ```
 
 ## Configuration
@@ -62,7 +62,7 @@ For Docker deployment, you'll need to use a wrapper script:
         "-e", "OBSIDIAN_VAULT_PATH=/vault",
         "-v", "/path/to/your/obsidian/vault:/vault:ro",
         "-v", "obsidian-mcp-index:/data",
-        "obsidian-mcp-search:latest"
+        "obsidian-search-mcp:latest"
       ]
     }
   }
@@ -77,7 +77,7 @@ If running the binary directly:
 {
   "mcpServers": {
     "obsidian-search": {
-      "command": "/path/to/obsidian-mcp-search",
+      "command": "/path/to/obsidian-search-mcp",
       "env": {
         "OBSIDIAN_VAULT_PATH": "/path/to/your/obsidian/vault",
         "MCP_INDEX_PATH": "/path/to/index/storage"

@@ -18,7 +18,7 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=amd64
 
-RUN go build -a -installsuffix cgo -o obsidian-mcp-search ./cmd/server
+RUN go build -a -installsuffix cgo -o obsidian-search-mcp ./cmd/server
 
 # Runtime stage
 FROM alpine:latest
@@ -37,7 +37,7 @@ RUN mkdir -p /home/obsidian/.obsidian-mcp/index && \
 WORKDIR /home/obsidian
 
 # Copy binary from builder
-COPY --from=builder /build/obsidian-mcp-search /usr/local/bin/obsidian-mcp-search
+COPY --from=builder /build/obsidian-search-mcp /usr/local/bin/obsidian-search-mcp
 
 # Switch to non-root user
 USER obsidian
@@ -46,4 +46,4 @@ USER obsidian
 ENV MCP_INDEX_PATH=/home/obsidian/.obsidian-mcp/index
 
 # Run the server
-ENTRYPOINT ["obsidian-mcp-search"]
+ENTRYPOINT ["obsidian-search-mcp"]

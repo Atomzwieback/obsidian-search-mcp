@@ -8,9 +8,9 @@ import (
     "syscall"
     
     "github.com/mark3labs/mcp-go/server"
-    "github.com/Atomzwieback/obsidian-mcp-search/internal/config"
-    "github.com/Atomzwieback/obsidian-mcp-search/internal/index"
-    "github.com/Atomzwieback/obsidian-mcp-search/internal/mcp"
+    "github.com/Atomzwieback/obsidian-search-mcp/internal/config"
+    "github.com/Atomzwieback/obsidian-search-mcp/internal/index"
+    "github.com/Atomzwieback/obsidian-search-mcp/internal/mcp"
 )
 
 func main() {

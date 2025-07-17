@@ -1,4 +1,4 @@
-module github.com/Atomzwieback/obsidian-mcp-search
+module github.com/Atomzwieback/obsidian-search-mcp
 
 go 1.24.4
 

@@ -8,7 +8,7 @@ import (
     "sync"
     "time"
     
-    "github.com/anyproto/tantivy-go"
+    tantivy "github.com/anyproto/tantivy-go"
     "github.com/karrick/godirwalk"
 )
 
@@ -20,52 +20,104 @@ type SearchResult struct {
 }
 
 type TantivyIndex struct {
-    schema      *tantivy.SchemaBuilder
-    index       *tantivy.Index
-    writer      *tantivy.IndexWriter
-    searcher    *tantivy.Searcher
+    context     *tantivy.TantivyContext
     indexPath   string
     mu          sync.RWMutex
     lastIndexed map[string]time.Time
 }
 
 func NewTantivyIndex(indexPath string) (*TantivyIndex, error) {
-    // Schema erstellen
-    schema := tantivy.NewSchemaBuilder()
-    schema.AddTextField("path", tantivy.Stored)
-    schema.AddTextField("content", tantivy.IndexRecordOption)
-    schema.AddI64Field("modified", tantivy.Stored)
-    schema.AddTextField("title", tantivy.Stored)
+    // Initialize tantivy library
+    err := tantivy.LibInit(false, false, "info")
+    if err != nil {
+        return nil, fmt.Errorf("failed to initialize tantivy: %w", err)
+    }
     
-    builtSchema := schema.Build()
+    // Create schema
+    builder, err := tantivy.NewSchemaBuilder()
+    if err != nil {
+        return nil, fmt.Errorf("failed to create schema builder: %w", err)
+    }
     
-    // Index erstellen oder öffnen
-    var index *tantivy.Index
-    var err error
+    // Add fields to schema
+    err = builder.AddTextField(
+        "path",
+        true,  // stored
+        false, // indexed as text
+        false, // fast
+        tantivy.IndexRecordOptionBasic,
+        tantivy.TokenizerRaw,
+    )
+    if err != nil {
+        return nil, fmt.Errorf("failed to add path field: %w", err)
+    }
     
+    err = builder.AddTextField(
+        "content",
+        false, // not stored (we'll read from file)
+        true,  // indexed as text
+        false, // fast
+        tantivy.IndexRecordOptionWithFreqsAndPositions,
+        tantivy.TokenizerSimple,
+    )
+    if err != nil {
+        return nil, fmt.Errorf("failed to add content field: %w", err)
+    }
+    
+    // For now, store modified as text field since AddI64Field is not available
+    err = builder.AddTextField(
+        "modified",
+        true,  // stored
+        false, // not indexed as text
+        false, // fast
+        tantivy.IndexRecordOptionBasic,
+        tantivy.TokenizerRaw,
+    )
+    if err != nil {
+        return nil, fmt.Errorf("failed to add modified field: %w", err)
+    }
+    
+    err = builder.AddTextField(
+        "title",
+        true,  // stored
+        true,  // indexed as text
+        false, // fast
+        tantivy.IndexRecordOptionWithFreqsAndPositions,
+        tantivy.TokenizerSimple,
+    )
+    if err != nil {
+        return nil, fmt.Errorf("failed to add title field: %w", err)
+    }
+    
+    // Build schema
+    schema, err := builder.BuildSchema()
+    if err != nil {
+        return nil, fmt.Errorf("failed to build schema: %w", err)
+    }
+    
+    // Create or open index
     if _, err := os.Stat(indexPath); os.IsNotExist(err) {
         os.MkdirAll(indexPath, 0755)
-        index, err = tantivy.NewIndex(builtSchema, indexPath)
-    } else {
-        index, err = tantivy.OpenIndex(indexPath)
     }
     
+    context, err := tantivy.NewTantivyContextWithSchema(indexPath, schema)
     if err != nil {
-        return nil, fmt.Errorf("failed to open index: %w", err)
+        return nil, fmt.Errorf("failed to create index context: %w", err)
     }
     
-    writer, err := index.Writer(50_000_000) // 50MB buffer
+    // Register tokenizers
+    err = context.RegisterTextAnalyzerSimple(tantivy.TokenizerSimple, 10000, tantivy.English)
     if err != nil {
-        return nil, fmt.Errorf("failed to create writer: %w", err)
+        return nil, fmt.Errorf("failed to register simple analyzer: %w", err)
     }
     
-    searcher := index.Searcher()
+    err = context.RegisterTextAnalyzerRaw(tantivy.TokenizerRaw)
+    if err != nil {
+        return nil, fmt.Errorf("failed to register raw analyzer: %w", err)
+    }
     
     return &TantivyIndex{
-        schema:      schema,
-        index:       index,
-        writer:      writer,
-        searcher:    searcher,
+        context:     context,
         indexPath:   indexPath,
         lastIndexed: make(map[string]time.Time),
     }, nil
@@ -75,7 +127,7 @@ func (ti *TantivyIndex) IndexDirectory(rootPath string, numWorkers int) error {
     ti.mu.Lock()
     defer ti.mu.Unlock()
     
-    // Lade gespeicherte Index-Zeiten
+    // Load saved timestamps
     ti.loadIndexTimestamps()
     
     type indexJob struct {
@@ -86,7 +138,7 @@ func (ti *TantivyIndex) IndexDirectory(rootPath string, numWorkers int) error {
     jobs := make(chan indexJob, 100)
     var wg sync.WaitGroup
     
-    // Worker starten
+    // Start workers
     for i := 0; i < numWorkers; i++ {
         wg.Add(1)
         go func() {
@@ -109,7 +161,7 @@ func (ti *TantivyIndex) IndexDirectory(rootPath string, numWorkers int) error {
                 return nil
             }
             
-            // Nur neu modifizierte Dateien indexieren
+            // Only index modified files
             if lastIndexed, exists := ti.lastIndexed[path]; exists {
                 if info.ModTime().Before(lastIndexed) || info.ModTime().Equal(lastIndexed) {
                     return nil
@@ -129,8 +181,7 @@ func (ti *TantivyIndex) IndexDirectory(rootPath string, numWorkers int) error {
     close(jobs)
     wg.Wait()
     
-    // Commit changes
-    ti.writer.Commit()
+    // Save timestamps
     ti.saveIndexTimestamps()
     
     return err
@@ -142,27 +193,53 @@ func (ti *TantivyIndex) indexFile(path string, info os.FileInfo) error {
         return err
     }
     
-    // Dokument erstellen
-    doc := tantivy.NewDocument()
-    doc.AddTextField("path", path)
-    doc.AddTextField("content", string(content))
-    doc.AddI64Field("modified", info.ModTime().Unix())
-    
-    // Titel aus erster Zeile extrahieren
+    // Extract title from first line
     lines := strings.Split(string(content), "\n")
     title := filepath.Base(path)
     if len(lines) > 0 && strings.HasPrefix(lines[0], "#") {
         title = strings.TrimSpace(strings.TrimPrefix(lines[0], "#"))
     }
-    doc.AddTextField("title", title)
     
-    // Altes Dokument löschen
-    ti.writer.DeleteTerm(tantivy.NewTerm("path", path))
+    // Delete old document if exists
+    err = ti.context.DeleteDocuments("path", path)
+    if err != nil {
+        // Ignore error - document might not exist
+    }
     
-    // Neues Dokument hinzufügen
-    ti.writer.AddDocument(doc)
+    // Create new document
+    doc := tantivy.NewDocument()
+    if doc == nil {
+        return fmt.Errorf("failed to create document")
+    }
     
-    // Timestamp aktualisieren
+    // Add fields
+    err = doc.AddField(path, ti.context, "path")
+    if err != nil {
+        return fmt.Errorf("failed to add path field: %w", err)
+    }
+    
+    err = doc.AddField(string(content), ti.context, "content")
+    if err != nil {
+        return fmt.Errorf("failed to add content field: %w", err)
+    }
+    
+    err = doc.AddField(fmt.Sprintf("%d", info.ModTime().Unix()), ti.context, "modified")
+    if err != nil {
+        return fmt.Errorf("failed to add modified field: %w", err)
+    }
+    
+    err = doc.AddField(title, ti.context, "title")
+    if err != nil {
+        return fmt.Errorf("failed to add title field: %w", err)
+    }
+    
+    // Add document
+    err = ti.context.AddAndConsumeDocuments(doc)
+    if err != nil {
+        return fmt.Errorf("failed to add document: %w", err)
+    }
+    
+    // Update timestamp
     ti.lastIndexed[path] = info.ModTime()
     
     return nil
@@ -172,39 +249,65 @@ func (ti *TantivyIndex) Search(query string, limit int) ([]SearchResult, error) 
     ti.mu.RLock()
     defer ti.mu.RUnlock()
     
-    // Query parser
-    queryParser := tantivy.NewQueryParser(ti.index, []string{"content", "title"})
-    tantivyQuery, err := queryParser.ParseQuery(query)
-    if err != nil {
-        return nil, fmt.Errorf("failed to parse query: %w", err)
-    }
+    // Build search context
+    searchCtx := tantivy.NewSearchContextBuilder().
+        SetQuery(query).
+        SetDocsLimit(uintptr(limit)).
+        SetWithHighlights(true).
+        AddFieldDefaultWeight("content").
+        AddFieldDefaultWeight("title").
+        Build()
     
     // Search
-    topDocs, err := ti.searcher.Search(tantivyQuery, limit)
+    searchResult, err := ti.context.Search(searchCtx)
     if err != nil {
         return nil, fmt.Errorf("search failed: %w", err)
     }
+    defer searchResult.Free()
     
-    results := make([]SearchResult, 0, len(topDocs))
+    results := make([]SearchResult, 0)
     
-    for _, scoreDoc := range topDocs {
-        doc, err := ti.searcher.Doc(scoreDoc.DocId)
+    size, err := searchResult.GetSize()
+    if err != nil {
+        return nil, fmt.Errorf("failed to get result size: %w", err)
+    }
+    
+    for i := uint64(0); i < size; i++ {
+        doc, err := searchResult.Get(i)
         if err != nil {
             continue
         }
         
-        path := doc.GetFirstTextField("path")
-        content := doc.GetFirstTextField("content")
+        // Get JSON representation
+        // Get fields manually since GetSchema is not available
+        jsonStr, err := doc.ToJson(ti.context, "path", "title")
+        if err != nil {
+            doc.Free()
+            continue
+        }
         
-        // Snippet erstellen
-        snippet, lineNumbers := ti.createSnippet(content, query, 150)
+        // Parse path from JSON (simple extraction)
+        pathStart := strings.Index(jsonStr, `"path":"`) + 8
+        pathEnd := strings.Index(jsonStr[pathStart:], `"`)
+        path := jsonStr[pathStart : pathStart+pathEnd]
+        
+        // Get snippet from highlights
+        snippet := ""
+        lineNumbers := []int{}
+        
+        // For now, create a simple snippet
+        if content, err := os.ReadFile(path); err == nil {
+            snippet, lineNumbers = ti.createSnippet(string(content), query, 150)
+        }
         
         results = append(results, SearchResult{
             FilePath:    path,
             Snippet:     snippet,
-            Score:       scoreDoc.Score,
+            Score:       1.0, // tantivy-go doesn't expose scores directly
             LineNumbers: lineNumbers,
         })
+        
+        doc.Free()
     }
     
     return results, nil
@@ -219,7 +322,7 @@ func (ti *TantivyIndex) createSnippet(content, query string, maxLength int) (str
     for i, line := range lines {
         if strings.Contains(strings.ToLower(line), queryLower) {
             matchedLines = append(matchedLines, i+1)
-            if len(snippetParts) < 3 { // Max 3 Zeilen im Snippet
+            if len(snippetParts) < 3 { // Max 3 lines in snippet
                 snippetParts = append(snippetParts, fmt.Sprintf("L%d: %s", i+1, line))
             }
         }
@@ -277,16 +380,19 @@ func (ti *TantivyIndex) RemoveFile(path string) error {
     ti.mu.Lock()
     defer ti.mu.Unlock()
     
-    ti.writer.DeleteTerm(tantivy.NewTerm("path", path))
-    ti.writer.Commit()
+    err := ti.context.DeleteDocuments("path", path)
+    if err != nil {
+        return err
+    }
+    
     delete(ti.lastIndexed, path)
     
     return nil
 }
 
 func (ti *TantivyIndex) Close() error {
-    ti.writer.Commit()
     ti.saveIndexTimestamps()
+    ti.context.Free()
     return nil
 }
 

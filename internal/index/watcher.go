@@ -98,9 +98,7 @@ func (fw *FileWatcher) processPendingEvents() {
         }
     }
     
-    if len(events) > 0 {
-        fw.index.writer.Commit()
-    }
+    // Commit is handled internally by UpdateFile/RemoveFile
 }
 
 func (fw *FileWatcher) Stop() error {

@@ -1,7 +1,5 @@
 <div align="center">
-  <img src="logo.png" alt="Obsidian Search MCP Logo" width="200">
-  
-  # obsidian-search-mcp
+  <img src="logo.png" alt="Obsidian Search MCP Logo" width="400">
 
   A Model Context Protocol (MCP) server that provides fast full-text search capabilities for Obsidian vaults using Tantivy-Go.
 </div>

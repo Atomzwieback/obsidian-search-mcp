@@ -45,9 +45,13 @@ The AI can quickly search through thousands of files, understand your knowledge 
 [![Docker Hub](https://img.shields.io/docker/v/atomzwieback/obsidian-search-mcp?label=Docker%20Hub)](https://hub.docker.com/r/atomzwieback/obsidian-search-mcp)
 [![Docker Pulls](https://img.shields.io/docker/pulls/atomzwieback/obsidian-search-mcp)](https://hub.docker.com/r/atomzwieback/obsidian-search-mcp)
 
-The pre-built image will be automatically pulled from Docker Hub when you first run the MCP server.
+#### Using Pre-built Image (Easiest)
 
-To build from source instead:
+The image will be automatically pulled from Docker Hub when you configure the MCP server. No manual steps required!
+
+#### Building from Source
+
+If you want to modify the code or build locally:
 
 ```bash
 # Clone the repository

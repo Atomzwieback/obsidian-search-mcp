@@ -49,4 +49,8 @@ We regularly update dependencies to patch known vulnerabilities:
 - Go dependencies: Run `go mod tidy` and check with `go list -m all`
 - Docker base images: Updated in Dockerfile
 
+## Acknowledgments
+
+Thank you for helping us improve the security of Obsidian Search MCP. Your contributions are greatly appreciated.
+
 For questions about security, contact: contact at atomzwieback.dev

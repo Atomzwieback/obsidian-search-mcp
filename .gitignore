@@ -19,6 +19,7 @@ go.work
 
 # Binary
 obsidian-mcp-search
+obsidian-search-mcp
 
 # IDE
 .idea/
@@ -33,3 +34,9 @@ Thumbs.db
 
 # Index files
 .obsidian-mcp/
+
+# Project specific
+.mcp.json
+*.mcp.json
+test-vault/
+.search-index/

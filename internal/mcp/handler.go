@@ -4,7 +4,7 @@ import (
     "encoding/json"
     "fmt"
     
-    "github.com/mark3labs/mcp-go"
+    "github.com/mark3labs/mcp-go/mcp"
     "github.com/mark3labs/mcp-go/server"
     "github.com/Atomzwieback/obsidian-search-mcp/internal/index"
 )

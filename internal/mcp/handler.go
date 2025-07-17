@@ -27,8 +27,8 @@ func (h *SearchHandler) SetupServer() *server.MCPServer {
     )
     
     // Search Tool
-    searchTool := mcp.NewTool("search_obsidian",
-        mcp.WithDescription("Search for content in Obsidian markdown files"),
+    searchTool := mcp.NewTool("search_vault",
+        mcp.WithDescription("Search for content in Obsidian vault markdown files"),
         mcp.WithString("query", 
             mcp.Required(), 
             mcp.Description("Search query text")),

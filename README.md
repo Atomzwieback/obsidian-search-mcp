@@ -100,14 +100,14 @@ If running the binary directly:
 
 Once configured, you can use the following commands in Claude:
 
-- "Search for 'meeting notes' in my Obsidian notes"
+- "Search for 'meeting notes' in my Obsidian vault"
 - "Find all files containing 'project timeline'"
 - "Show me notes about 'golang performance'"
 - "Reindex my Obsidian vault"
 
 ### Available Tools
 
-1. **search_obsidian**: Search for content in Obsidian markdown files
+1. **search_vault**: Search for content in Obsidian vault markdown files
    - Parameters:
      - `query` (required): Search query text
      - `limit` (optional): Maximum number of results (default: 10)

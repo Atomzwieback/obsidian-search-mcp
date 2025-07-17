@@ -1,27 +1,25 @@
-# Build stage for tantivy-go library
-FROM rust:1.75-alpine AS rust-builder
-
-# Install build dependencies
-RUN apk add --no-cache musl-dev gcc g++ make git
-
-# Clone and build tantivy-go
-WORKDIR /build
-RUN git clone https://github.com/anyproto/tantivy-go.git
-WORKDIR /build/tantivy-go/rust
-
-# Build the C library
-RUN cargo build --release
-RUN cp target/release/libtantivy_go.a /usr/local/lib/
-RUN cp target/release/libtantivy_go.so /usr/local/lib/ || true
-
-# Go build stage
+# Build stage
 FROM golang:1.23-alpine AS builder
 
 # Install build dependencies
-RUN apk add --no-cache gcc g++ musl-dev git
+RUN apk add --no-cache gcc g++ musl-dev git make curl
 
-# Copy the tantivy library from rust builder
-COPY --from=rust-builder /usr/local/lib/libtantivy_go.* /usr/local/lib/
+# Install Rust (needed for tantivy-go setup)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Clone tantivy-go to get pre-built libraries
+WORKDIR /tantivy-setup
+RUN git clone https://github.com/anyproto/tantivy-go.git
+WORKDIR /tantivy-setup/tantivy-go/rust
+
+# Download pre-built libraries instead of building from source
+RUN make download-tantivy-all
+
+# Copy the downloaded libraries to system location
+RUN mkdir -p /usr/local/lib && \
+    cp lib/linux_amd64/*.a /usr/local/lib/ && \
+    cp lib/linux_arm64/*.a /usr/local/lib/ || true
 
 WORKDIR /build
 
@@ -32,13 +30,13 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Build with CGO enabled
+# Build with CGO enabled and correct library paths
 ENV CGO_ENABLED=1
 ENV GOOS=linux
-ENV GOARCH=amd64
 ENV CGO_LDFLAGS="-L/usr/local/lib"
 
-RUN go build -a -installsuffix cgo -o obsidian-search-mcp ./cmd/server
+# Build for the current architecture
+RUN go build -a -o obsidian-search-mcp ./cmd/server
 
 # Runtime stage
 FROM alpine:latest
@@ -46,8 +44,8 @@ FROM alpine:latest
 # Install runtime dependencies
 RUN apk add --no-cache ca-certificates libgcc libstdc++
 
-# Copy the tantivy library
-COPY --from=rust-builder /usr/local/lib/libtantivy_go.* /usr/local/lib/
+# Copy the tantivy library from builder
+COPY --from=builder /usr/local/lib/libtantivy_go.a /usr/local/lib/
 
 # Create non-root user
 RUN addgroup -g 1000 -S obsidian && \
@@ -62,15 +60,11 @@ WORKDIR /home/obsidian
 # Copy binary from builder
 COPY --from=builder /build/obsidian-search-mcp /usr/local/bin/obsidian-search-mcp
 
-# Update library cache
-RUN ldconfig /usr/local/lib || true
-
 # Switch to non-root user
 USER obsidian
 
-# Environment variables (can be overridden)
+# Environment variables
 ENV MCP_INDEX_PATH=/home/obsidian/.obsidian-mcp/index
-ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
 # Run the server
 ENTRYPOINT ["obsidian-search-mcp"]

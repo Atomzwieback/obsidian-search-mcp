@@ -289,3 +289,9 @@ func (ti *TantivyIndex) Close() error {
     ti.saveIndexTimestamps()
     return nil
 }
+
+func (ti *TantivyIndex) GetIndexedFilesCount() int {
+    ti.mu.RLock()
+    defer ti.mu.RUnlock()
+    return len(ti.lastIndexed)
+}

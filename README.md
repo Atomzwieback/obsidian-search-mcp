@@ -1,14 +1,12 @@
 <div align="center">
   <img src="logo.png" alt="Obsidian Search MCP Logo" width="400">
 
-  **Blazing fast search for your Obsidian knowledge base, directly in Claude Code or any MCP-compatible client**
-
   [![Go Tests](https://github.com/Atomzwieback/obsidian-search-mcp/actions/workflows/go.yml/badge.svg)](https://github.com/Atomzwieback/obsidian-search-mcp/actions/workflows/go.yml)
   [![Docker](https://github.com/Atomzwieback/obsidian-search-mcp/actions/workflows/docker.yml/badge.svg)](https://github.com/Atomzwieback/obsidian-search-mcp/actions/workflows/docker.yml)
   [![Docker Hub](https://img.shields.io/docker/v/atomzwieback/obsidian-search-mcp?label=Docker%20Hub)](https://hub.docker.com/r/atomzwieback/obsidian-search-mcp)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-  A Model Context Protocol (MCP) server that provides instant full-text search capabilities for Obsidian vaults using [Tantivy-Go](https://github.com/anyproto/tantivy-go).
+  **Blazing fast search for your Obsidian knowledge base, powered by [Tantivy](https://github.com/quickwit-oss/tantivy) and accessible through any MCP client**
 </div>
 
 ## Why Obsidian Search MCP?

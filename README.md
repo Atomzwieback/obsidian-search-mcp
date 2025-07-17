@@ -8,16 +8,18 @@
 
 ## Why Obsidian Search MCP?
 
-If you're like me, your Obsidian vault contains years of accumulated knowledge - meeting notes, project documentation, research, ideas, and personal thoughts. But when working with AI assistants, you're limited to copy-pasting individual notes. 
+Your Obsidian vault grows organically over years - scattered thoughts, meeting notes, project docs, research snippets. Eventually, even you can't remember where everything is. You need help organizing and connecting all this knowledge.
 
-**This MCP server solves that by giving any MCP-compatible client direct search access to your entire knowledge base.**
+**But for an AI assistant to help organize your vault, it needs to see what's already there.**
 
-Now you can ask questions like:
-- "What did I document about the PYCK project?"
-- "Find my notes on Temporal workflows"
-- "Search for that meeting where we discussed the API redesign"
+This MCP server enables that by giving AI assistants instant search access to your entire vault. Now you can have conversations like:
 
-And your AI assistant will instantly search through thousands of notes to find exactly what you need, complete with context and line numbers.
+- "Help me consolidate all my notes about the PYCK project"
+- "Find patterns in my meeting notes from last quarter"
+- "Which notes reference this API design but aren't properly linked?"
+- "Create a MOC (Map of Content) for my Temporal workflow research"
+
+The AI can quickly search through thousands of files, understand your knowledge structure, and help you build a better organized, more connected vault.
 
 ## Features
 

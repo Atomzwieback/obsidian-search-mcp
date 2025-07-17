@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Go
+*.test
+*.out
+vendor/
+go.work
+
+# Binary
+obsidian-mcp-search
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+LICENSE
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Local index
+.obsidian-mcp/

@@ -15,28 +15,63 @@ A Model Context Protocol (MCP) server that provides fast full-text search capabi
 
 ### Prerequisites
 
-- Go 1.20 or higher
 - Obsidian vault with markdown files
+- Either Go 1.20+ OR Docker
 
-### Build from Source
+### Option 1: Docker (Recommended)
+
+The easiest way to run the server is using Docker, which handles all CGO dependencies:
+
+```bash
+# Clone the repository
+git clone https://github.com/Atomzwieback/obsidian-mcp-search.git
+cd obsidian-mcp-search
+
+# Build the Docker image
+./scripts/docker-build.sh
+
+# Or use docker-compose
+docker-compose build
+```
+
+### Option 2: Build from Source
+
+⚠️ **Note**: This requires CGO and Tantivy C libraries to be available.
 
 ```bash
 git clone https://github.com/Atomzwieback/obsidian-mcp-search.git
 cd obsidian-mcp-search
-go build -o obsidian-mcp-search cmd/server/main.go
-```
-
-### Install with Go
-
-```bash
-go install github.com/Atomzwieback/obsidian-mcp-search/cmd/server@latest
+CGO_ENABLED=1 go build -o obsidian-mcp-search cmd/server/main.go
 ```
 
 ## Configuration
 
 ### Claude Desktop Setup
 
-Add the following to your Claude Desktop `config.json`:
+#### Docker Setup
+
+For Docker deployment, you'll need to use a wrapper script:
+
+```json
+{
+  "mcpServers": {
+    "obsidian-search": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-e", "OBSIDIAN_VAULT_PATH=/vault",
+        "-v", "/path/to/your/obsidian/vault:/vault:ro",
+        "-v", "obsidian-mcp-index:/data",
+        "obsidian-mcp-search:latest"
+      ]
+    }
+  }
+}
+```
+
+#### Native Binary Setup
+
+If running the binary directly:
 
 ```json
 {

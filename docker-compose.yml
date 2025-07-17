@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  obsidian-mcp-search:
+    build: .
+    container_name: obsidian-mcp-search
+    restart: unless-stopped
+    environment:
+      - OBSIDIAN_VAULT_PATH=/vault
+      - MCP_INDEX_PATH=/data/index
+    volumes:
+      # Mount your Obsidian vault (read-only for safety)
+      - ${OBSIDIAN_VAULT_PATH}:/vault:ro
+      # Persistent index storage
+      - obsidian-mcp-index:/data
+    # For MCP stdio communication
+    stdin_open: true
+    tty: true
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+
+volumes:
+  obsidian-mcp-index:
+    driver: local

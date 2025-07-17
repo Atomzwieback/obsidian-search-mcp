@@ -1,8 +1,23 @@
 <div align="center">
   <img src="logo.png" alt="Obsidian Search MCP Logo" width="400">
 
-  A Model Context Protocol (MCP) server that provides fast full-text search capabilities for Obsidian vaults using Tantivy-Go.
+  **Blazing fast search for your Obsidian knowledge base, directly in Claude**
+
+  A Model Context Protocol (MCP) server that provides instant full-text search capabilities for Obsidian vaults using Tantivy-Go.
 </div>
+
+## Why Obsidian Search MCP?
+
+If you're like me, your Obsidian vault contains years of accumulated knowledge - meeting notes, project documentation, research, ideas, and personal thoughts. But when working with Claude, you're limited to copy-pasting individual notes. 
+
+**This MCP server solves that by giving Claude direct search access to your entire knowledge base.**
+
+Now you can ask Claude questions like:
+- "What did I document about the PYCK project?"
+- "Find my notes on Temporal workflows"
+- "Search for that meeting where we discussed the API redesign"
+
+And Claude will instantly search through thousands of notes to find exactly what you need, complete with context and line numbers.
 
 ## Features
 

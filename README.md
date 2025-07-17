@@ -3,7 +3,7 @@
 
   **Blazing fast search for your Obsidian knowledge base, directly in Claude**
 
-  A Model Context Protocol (MCP) server that provides instant full-text search capabilities for Obsidian vaults using Tantivy-Go.
+  A Model Context Protocol (MCP) server that provides instant full-text search capabilities for Obsidian vaults using [Tantivy-Go](https://github.com/anyproto/tantivy-go).
 </div>
 
 ## Why Obsidian Search MCP?
@@ -21,7 +21,7 @@ And Claude will instantly search through thousands of notes to find exactly what
 
 ## Features
 
-- 🔍 **Fast Full-Text Search**: Powered by Tantivy, a high-performance search engine
+- 🔍 **Fast Full-Text Search**: Powered by [Tantivy](https://github.com/quickwit-oss/tantivy), a high-performance search engine written in Rust
 - 📁 **Incremental Indexing**: Only re-indexes modified files
 - 🔄 **Real-time Updates**: Automatically updates the index when files change
 - 🚀 **Concurrent Processing**: Uses multiple CPU cores for fast indexing
@@ -134,10 +134,11 @@ Once configured, you can use the following commands in Claude:
 ## Architecture
 
 The server is built with:
-- **Tantivy-Go**: High-performance full-text search engine
-- **MCP-Go**: Model Context Protocol server implementation
-- **FSNotify**: File system monitoring for real-time updates
-- **Godirwalk**: Fast directory traversal
+- **[Tantivy-Go](https://github.com/anyproto/tantivy-go)**: Go bindings for the Tantivy search engine
+- **[Tantivy](https://github.com/quickwit-oss/tantivy)**: Lightning-fast full-text search engine written in Rust
+- **[MCP-Go](https://github.com/mark3labs/mcp-go)**: Model Context Protocol server implementation
+- **[FSNotify](https://github.com/fsnotify/fsnotify)**: File system monitoring for real-time updates
+- **[Godirwalk](https://github.com/karrick/godirwalk)**: Fast directory traversal
 
 ## Performance
 

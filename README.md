@@ -1,23 +1,23 @@
 <div align="center">
   <img src="logo.png" alt="Obsidian Search MCP Logo" width="400">
 
-  **Blazing fast search for your Obsidian knowledge base, directly in Claude**
+  **Blazing fast search for your Obsidian knowledge base, directly in Claude Code or any MCP-compatible client**
 
   A Model Context Protocol (MCP) server that provides instant full-text search capabilities for Obsidian vaults using [Tantivy-Go](https://github.com/anyproto/tantivy-go).
 </div>
 
 ## Why Obsidian Search MCP?
 
-If you're like me, your Obsidian vault contains years of accumulated knowledge - meeting notes, project documentation, research, ideas, and personal thoughts. But when working with Claude, you're limited to copy-pasting individual notes. 
+If you're like me, your Obsidian vault contains years of accumulated knowledge - meeting notes, project documentation, research, ideas, and personal thoughts. But when working with AI assistants, you're limited to copy-pasting individual notes. 
 
-**This MCP server solves that by giving Claude direct search access to your entire knowledge base.**
+**This MCP server solves that by giving any MCP-compatible client direct search access to your entire knowledge base.**
 
-Now you can ask Claude questions like:
+Now you can ask questions like:
 - "What did I document about the PYCK project?"
 - "Find my notes on Temporal workflows"
 - "Search for that meeting where we discussed the API redesign"
 
-And Claude will instantly search through thousands of notes to find exactly what you need, complete with context and line numbers.
+And your AI assistant will instantly search through thousands of notes to find exactly what you need, complete with context and line numbers.
 
 ## Features
 
@@ -26,7 +26,7 @@ And Claude will instantly search through thousands of notes to find exactly what
 - 🔄 **Real-time Updates**: Automatically updates the index when files change
 - 🚀 **Concurrent Processing**: Uses multiple CPU cores for fast indexing
 - 📍 **Context Snippets**: Shows surrounding context for search matches
-- 🔗 **MCP Integration**: Works seamlessly with Claude Desktop
+- 🔗 **MCP Integration**: Works seamlessly with Claude Code, Claude Desktop, and other MCP clients
 
 ## Installation
 

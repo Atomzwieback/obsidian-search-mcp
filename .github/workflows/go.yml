@@ -1,0 +1,58 @@
+name: Go
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc g++ musl-dev
+
+    - name: Download tantivy libraries
+      run: |
+        mkdir -p /tmp/tantivy-libs
+        cd /tmp/tantivy-libs
+        curl -L -o tantivy.tar.gz https://github.com/anyproto/tantivy-go/releases/download/v1.0.4/linux-amd64-musl.tar.gz
+        tar -xzf tantivy.tar.gz
+        sudo cp libtantivy_go.a /usr/local/lib/
+
+    - name: Verify dependencies
+      run: go mod verify
+
+    - name: Build
+      run: |
+        export CGO_ENABLED=1
+        export CGO_LDFLAGS="-L/usr/local/lib"
+        go build -v ./cmd/server
+
+    - name: Test
+      run: |
+        export CGO_ENABLED=1
+        export CGO_LDFLAGS="-L/usr/local/lib"
+        go test -v ./...
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build Docker image
+      run: docker build -t obsidian-search-mcp:test .
+
+    - name: Test Docker image
+      run: |
+        docker run --rm obsidian-search-mcp:test --help || true

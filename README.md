@@ -3,6 +3,11 @@
 
   **Blazing fast search for your Obsidian knowledge base, directly in Claude Code or any MCP-compatible client**
 
+  [![Go Tests](https://github.com/Atomzwieback/obsidian-search-mcp/actions/workflows/go.yml/badge.svg)](https://github.com/Atomzwieback/obsidian-search-mcp/actions/workflows/go.yml)
+  [![Docker](https://github.com/Atomzwieback/obsidian-search-mcp/actions/workflows/docker.yml/badge.svg)](https://github.com/Atomzwieback/obsidian-search-mcp/actions/workflows/docker.yml)
+  [![Docker Hub](https://img.shields.io/docker/v/atomzwieback/obsidian-search-mcp?label=Docker%20Hub)](https://hub.docker.com/r/atomzwieback/obsidian-search-mcp)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
   A Model Context Protocol (MCP) server that provides instant full-text search capabilities for Obsidian vaults using [Tantivy-Go](https://github.com/anyproto/tantivy-go).
 </div>
 
@@ -39,7 +44,12 @@ The AI can quickly search through thousands of files, understand your knowledge 
 
 ### Option 1: Docker (Recommended)
 
-The easiest way to run the server is using Docker, which handles all CGO dependencies:
+[![Docker Hub](https://img.shields.io/docker/v/atomzwieback/obsidian-search-mcp?label=Docker%20Hub)](https://hub.docker.com/r/atomzwieback/obsidian-search-mcp)
+[![Docker Pulls](https://img.shields.io/docker/pulls/atomzwieback/obsidian-search-mcp)](https://hub.docker.com/r/atomzwieback/obsidian-search-mcp)
+
+The pre-built image will be automatically pulled from Docker Hub when you first run the MCP server.
+
+To build from source instead:
 
 ```bash
 # Clone the repository
@@ -47,10 +57,7 @@ git clone https://github.com/Atomzwieback/obsidian-search-mcp.git
 cd obsidian-search-mcp
 
 # Build the Docker image
-./scripts/docker-build.sh
-
-# Or use docker-compose
-docker-compose build
+docker build -t obsidian-search-mcp .
 ```
 
 ### Option 2: Build from Source
@@ -81,7 +88,7 @@ For Docker deployment, you'll need to use a wrapper script:
         "-e", "OBSIDIAN_VAULT_PATH=/vault",
         "-v", "/path/to/your/obsidian/vault:/vault:ro",
         "-v", "obsidian-mcp-index:/data",
-        "obsidian-search-mcp:latest"
+        "atomzwieback/obsidian-search-mcp:latest"
       ]
     }
   }

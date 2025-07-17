@@ -2,24 +2,26 @@
 FROM golang:1.23-alpine AS builder
 
 # Install build dependencies
-RUN apk add --no-cache gcc g++ musl-dev git make curl
+RUN apk add --no-cache gcc g++ musl-dev git curl tar
 
-# Install Rust (needed for tantivy-go setup)
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
+# Set tantivy-go version
+ENV TANTIVY_VERSION=1.0.4
 
-# Clone tantivy-go to get pre-built libraries
-WORKDIR /tantivy-setup
-RUN git clone https://github.com/anyproto/tantivy-go.git
-WORKDIR /tantivy-setup/tantivy-go/rust
-
-# Download pre-built libraries instead of building from source
-RUN make download-tantivy-all
-
-# Copy the downloaded libraries to system location
-RUN mkdir -p /usr/local/lib && \
-    cp lib/linux_amd64/*.a /usr/local/lib/ && \
-    cp lib/linux_arm64/*.a /usr/local/lib/ || true
+# Download pre-built tantivy libraries (musl version for Alpine)
+WORKDIR /tantivy-libs
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then \
+        TANTIVY_ARCH="amd64"; \
+    elif [ "$ARCH" = "aarch64" ]; then \
+        TANTIVY_ARCH="arm64"; \
+    else \
+        echo "Unsupported architecture: $ARCH" && exit 1; \
+    fi && \
+    echo "Downloading tantivy-go v${TANTIVY_VERSION} for linux-${TANTIVY_ARCH}-musl" && \
+    curl -L -o tantivy.tar.gz https://github.com/anyproto/tantivy-go/releases/download/v${TANTIVY_VERSION}/linux-${TANTIVY_ARCH}-musl.tar.gz && \
+    tar -xzf tantivy.tar.gz && \
+    mkdir -p /usr/local/lib && \
+    cp libtantivy_go.a /usr/local/lib/
 
 WORKDIR /build
 
@@ -30,12 +32,12 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Build with CGO enabled and correct library paths
+# Build with CGO enabled
 ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV CGO_LDFLAGS="-L/usr/local/lib"
 
-# Build for the current architecture
+# Build the application
 RUN go build -a -o obsidian-search-mcp ./cmd/server
 
 # Runtime stage

@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "obsidian-search": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "OBSIDIAN_VAULT_PATH=/vault",
+        "-e",
+        "MCP_INDEX_PATH=/index",
+        "-v",
+        "/path/to/your/obsidian/vault:/vault:ro",
+        "-v",
+        "/path/to/your/obsidian/vault/.search-index:/index",
+        "ghcr.io/atomzwieback/obsidian-search-mcp:latest"
+      ]
+    }
+  }
+}

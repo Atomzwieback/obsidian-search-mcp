@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  obsidian-search-test:
+    build: .
+    environment:
+      - OBSIDIAN_VAULT_PATH=/vault
+      - MCP_INDEX_PATH=/data/index
+    volumes:
+      - ./test-vault:/vault:ro
+      - test-index:/data
+    stdin_open: true
+    tty: true
+    command: ["/usr/local/bin/obsidian-search-mcp"]
+
+volumes:
+  test-index:

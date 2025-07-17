@@ -17,7 +17,7 @@ Your Obsidian vault grows organically over years - scattered thoughts, meeting n
 
 This MCP server enables that by giving AI assistants instant search access to your entire vault. Now you can have conversations like:
 
-- "Help me consolidate all my notes about the PYCK project"
+- "Help me consolidate all my notes about the backend refactoring"
 - "Find patterns in my meeting notes from last quarter"
 - "Which notes reference this API design but aren't properly linked?"
 - "Create a MOC (Map of Content) for my Temporal workflow research"

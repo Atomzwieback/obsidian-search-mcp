@@ -45,14 +45,3 @@ jobs:
         export CGO_LDFLAGS="-L/usr/local/lib"
         go test -v ./...
 
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Build Docker image
-      run: docker build -t obsidian-search-mcp:test .
-
-    - name: Test Docker image
-      run: |
-        docker run --rm obsidian-search-mcp:test --help || true

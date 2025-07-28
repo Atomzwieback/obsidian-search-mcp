@@ -8,7 +8,7 @@ require (
 	github.com/anyproto/tantivy-go v1.0.4
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/karrick/godirwalk v1.17.0
-	github.com/mark3labs/mcp-go v0.34.0
+	github.com/mark3labs/mcp-go v0.35.0
 )
 
 require (

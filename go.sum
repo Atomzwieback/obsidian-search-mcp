@@ -1,5 +1,5 @@
-github.com/anyproto/tantivy-go v1.0.4 h1:C7aMADeglBNl2QUKEJwujmaiIGtcYFpNIFJl77UwGIo=
-github.com/anyproto/tantivy-go v1.0.4/go.mod h1:LtipOpRjGtcYMGcop6gQN7rVl1Pc6BlIs9BTMqeWMsk=
+github.com/anyproto/tantivy-go v1.0.5 h1:/8sc8oiOWA7SYAppRuf54yxsCsKLtysodUcgNGksKok=
+github.com/anyproto/tantivy-go v1.0.5/go.mod h1:LtipOpRjGtcYMGcop6gQN7rVl1Pc6BlIs9BTMqeWMsk=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/frankban/quicktest v1.14.6 h1:7Xjx+VpznH+oBnejlPUj8oUpdxnVs4f8XU8WnHkI4W8=

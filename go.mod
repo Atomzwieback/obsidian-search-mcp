@@ -5,7 +5,7 @@ go 1.23.2
 toolchain go1.24.4
 
 require (
-	github.com/anyproto/tantivy-go v1.0.4
+	github.com/anyproto/tantivy-go v1.0.6
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/karrick/godirwalk v1.17.0
 	github.com/mark3labs/mcp-go v0.34.0
